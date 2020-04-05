@@ -60,6 +60,8 @@ func initialize() {
 	if cerr != nil {
 		panic(cerr.Error())
 	}
-	clientSet = cset
+	if clientSet == nil {
+		clientSet = cset
+	}
 	mut.Unlock()
 }
