@@ -1,6 +1,6 @@
 module github.com/skhatri/k8s-read
 
-go 1.11
+go 1.12
 
 require (
 	github.com/skhatri/api-router-go v0.0.0-20200405044815-2dab6984abfb

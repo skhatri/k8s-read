@@ -1,3 +1,7 @@
+[![Build](https://travis-ci.com/skhatri/k8s-read.svg?branch=master)](https://travis-ci.com/github/skhatri/k8s-read)
+[![Code Coverage](https://img.shields.io/codecov/c/github/skhatri/k8s-read/master.svg)](https://codecov.io/github/skhatri/k8s-read?branch=master)
+
+
 ### k8s-read
 A list of HTTP API to enquire Kubernetes Cluster about the active workload.
 
