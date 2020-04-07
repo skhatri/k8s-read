@@ -2,17 +2,17 @@ package client
 
 import (
 	"flag"
-	"fmt"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
 )
 
 func loadFromKubeConfig() (*rest.Config, error) {
-	fmt.Println("Attempt to load from config")
+	log.Println("Attempt to load from config")
 	var kubeConfigPath *string
 	kubeConfigPath = flag.String("kubeconfig", filepath.Join(os.Getenv("HOME"), ".kube", "config"), "kube config file")
 	flag.Parse()
@@ -21,7 +21,7 @@ func loadFromKubeConfig() (*rest.Config, error) {
 }
 
 func assumeServiceAccountAccess() (*rest.Config, error) {
-	fmt.Println("attempt to load from serviceaccount")
+	log.Println("attempt to load from serviceaccount")
 	return rest.InClusterConfig()
 }
 
