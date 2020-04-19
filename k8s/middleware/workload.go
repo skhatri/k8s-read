@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/skhatri/k8s-read/k8s/client"
@@ -39,7 +40,7 @@ func GetWorkload(namespace string, kind string) ([]Workload, error) {
 }
 
 func getDeployments(k8s *kubernetes.Clientset, namespace string) ([]Workload, error) {
-	depList, depErr := k8s.AppsV1().Deployments(namespace).List(metav1.ListOptions{})
+	depList, depErr := k8s.AppsV1().Deployments(namespace).List(context.TODO(), metav1.ListOptions{})
 	if depErr != nil {
 		return nil, depErr
 	}
@@ -59,7 +60,7 @@ func getDeployments(k8s *kubernetes.Clientset, namespace string) ([]Workload, er
 }
 
 func getStatefulSets(k8s *kubernetes.Clientset, namespace string) ([]Workload, error) {
-	stList, stErr := k8s.AppsV1().StatefulSets(namespace).List(metav1.ListOptions{})
+	stList, stErr := k8s.AppsV1().StatefulSets(namespace).List(context.TODO(), metav1.ListOptions{})
 	if stErr != nil {
 		return nil, stErr
 	}
@@ -80,7 +81,7 @@ func getStatefulSets(k8s *kubernetes.Clientset, namespace string) ([]Workload, e
 }
 
 func getDaemonSets(k8s *kubernetes.Clientset, namespace string) ([]Workload, error) {
-	stList, stErr := k8s.AppsV1().DaemonSets(namespace).List(metav1.ListOptions{})
+	stList, stErr := k8s.AppsV1().DaemonSets(namespace).List(context.TODO(), metav1.ListOptions{})
 	if stErr != nil {
 		return nil, stErr
 	}
@@ -101,7 +102,7 @@ func getDaemonSets(k8s *kubernetes.Clientset, namespace string) ([]Workload, err
 }
 
 func getJobs(k8s *kubernetes.Clientset, namespace string) ([]Workload, error) {
-	jobList, jobErr := k8s.BatchV1().Jobs(namespace).List(metav1.ListOptions{})
+	jobList, jobErr := k8s.BatchV1().Jobs(namespace).List(context.TODO(), metav1.ListOptions{})
 	if jobErr != nil {
 		return nil, jobErr
 	}

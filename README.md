@@ -46,4 +46,75 @@ Output:
   }]
 }
 ```
+### List Custom Resource Definitions
+GET /api/crds
+```
+{
+    "data": [
+        {
+            "name": "cities.world.io",
+            "group": "world.io",
+            "resource-type": "cities",
+            "kind": "City",
+            "version": "v1alpha1",
+            "link": "/api/crd-instances?resource-group=world.io&resource-type=cities&resource-version=v1alpha1"
+        }
+    ]
+}
+```
 
+### List Custom Resource Instances
+GET /api/crd-instances?resource-group=world.io&resource-type=cities&resource-version=v1alpha1
+
+```
+{
+    "data": [
+        {
+            "namespace": "default",
+            "name": "s-cities",
+            "group": "world.io",
+            "version": "v1alpha1",
+            "kind": "City",
+            "link": "/api/crd-instance?resource-group=world.io&resource-type=cities&resource-version=v1alpha1&namespace=default&resource-name=s-cities"
+        }
+    ]
+}   
+```
+
+### Get Custom Resource Instance
+GET /api/crds?namespace=default&resource-type=cities&resource-group=world.io&resource-version=v1alpha1&resource-name=s-cities
+
+```
+{
+    "data": {
+        "spec": {
+            "apps": [
+                {
+                    "country": "Australia",
+                    "name": "sydney"
+                },
+                {
+                    "country": "USA",
+                    "name": "san francisco"
+                }
+            ]
+        },
+        "metadata": {
+            "annotations": {
+                "living-expense": "high",
+                "weather": "great"
+            },
+            "creationTimestamp": "2020-04-19T00:22:21Z",
+            "generation": 1,
+            "labels": {
+                "starts-with": "S"
+            },
+            "name": "s-cities",
+            "namespace": "default",
+            "resourceVersion": "176136",
+            "selfLink": "/apis/world.io/v1alpha1/namespaces/default/cities/s-cities",
+            "uid": "d5a9c026-81d3-11ea-b6f1-02430e0005fc"
+        }
+    }
+}
+```

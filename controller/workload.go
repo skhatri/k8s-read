@@ -26,7 +26,6 @@ func fetchStatefulsets(web *router.WebRequest) *model.Container {
 	return getWorkload(namespace, "statefulset")
 }
 
-
 func getWorkload(namespace string, kind string) *model.Container {
 	workload, err := middleware.GetWorkload(namespace, kind)
 	if err != nil {

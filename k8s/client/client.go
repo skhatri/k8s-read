@@ -2,6 +2,8 @@ package client
 
 import (
 	"flag"
+	apixv1beta1client "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -32,6 +34,8 @@ func insideKube() bool {
 }
 
 var clientSet *kubernetes.Clientset
+var extClient *apixv1beta1client.ApiextensionsV1beta1Client
+var dynClient *dynamic.Interface
 var mut = sync.Mutex{}
 
 func GetClient() *kubernetes.Clientset {
@@ -42,8 +46,26 @@ func GetClient() *kubernetes.Clientset {
 	return clientSet
 }
 
+func GetExtensionsClient() *apixv1beta1client.ApiextensionsV1beta1Client {
+	if extClient != nil {
+		return extClient
+	}
+	initialize()
+	return extClient
+}
+
+func GetDynamicClient() *dynamic.Interface {
+	if dynClient != nil {
+		return dynClient
+	}
+	initialize()
+	return dynClient
+}
+
 func initialize() {
 	mut.Lock()
+	defer 	mut.Unlock()
+
 	var cfg *rest.Config
 	var err error
 	if insideKube() {
@@ -60,8 +82,18 @@ func initialize() {
 	if cerr != nil {
 		panic(cerr.Error())
 	}
+	v1beta1Client, err := apixv1beta1client.NewForConfig(cfg)
+	if err != nil {
+		panic(err.Error())
+	}
+	dClient := dynamic.NewForConfigOrDie(cfg)
 	if clientSet == nil {
 		clientSet = cset
 	}
-	mut.Unlock()
+	if extClient == nil {
+		extClient = v1beta1Client
+	}
+	if dynClient == nil {
+		dynClient = &dClient
+	}
 }
