@@ -118,3 +118,8 @@ GET /api/crds?namespace=default&resource-type=cities&resource-group=world.io&res
     }
 }
 ```
+
+#### Docker
+```
+docker build --no-cache -t k8s-read .
+```
