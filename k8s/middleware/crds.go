@@ -17,7 +17,7 @@ func GetCrdByName(namespace string, gvr schema.GroupVersionResource, resourceNam
 	if namespace == "" {
 		return nil, errors.New("namespace is required")
 	}
-	dynamicClient := *(client.GetDynamicClient())
+	dynamicClient := client.GetDynamicClient()
 
 	namespaceResInt := dynamicClient.Resource(gvr).Namespace(namespace)
 	resource, err := namespaceResInt.Get(context.TODO(), resourceName, metav1.GetOptions{})
@@ -37,7 +37,7 @@ func GetCrdByName(namespace string, gvr schema.GroupVersionResource, resourceNam
 
 //GetCrdInstanceList returns custom resource instances for a group
 func GetCrdInstanceList(namespace string, gvr schema.GroupVersionResource) ([]CustomResourceInstanceSummary, error) {
-	dynamicClient := *(client.GetDynamicClient())
+	dynamicClient := client.GetDynamicClient()
 
 	var namespaceResInt dynamic.ResourceInterface = dynamicClient.Resource(gvr)
 	if namespace != "" {

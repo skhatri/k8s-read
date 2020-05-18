@@ -13,6 +13,7 @@ func Configure(configurer router.ApiConfigurer) {
 		Get("/api/deployments", fetchDeployments).
 		Get("/api/statefulsets", fetchStatefulsets).
 		Get("/api/jobs", fetchJobs).
+		Get("/api/nodes", nodeHandler).
 		Get("/api/crd-instances", getCrdInstanceList).
 		Get("/api/crd-instance", getCrdInstance).
 		Get("/api/crds", getCrds).

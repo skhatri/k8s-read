@@ -7,6 +7,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"log"
 	"os"
 	"path/filepath"
@@ -35,7 +36,7 @@ func insideKube() bool {
 
 var clientSet *kubernetes.Clientset
 var extClient *apixv1beta1client.ApiextensionsV1beta1Client
-var dynClient *dynamic.Interface
+var dynClient dynamic.Interface
 var mut = sync.Mutex{}
 
 func GetClient() *kubernetes.Clientset {
@@ -54,7 +55,7 @@ func GetExtensionsClient() *apixv1beta1client.ApiextensionsV1beta1Client {
 	return extClient
 }
 
-func GetDynamicClient() *dynamic.Interface {
+func GetDynamicClient() dynamic.Interface {
 	if dynClient != nil {
 		return dynClient
 	}
@@ -94,6 +95,6 @@ func initialize() {
 		extClient = v1beta1Client
 	}
 	if dynClient == nil {
-		dynClient = &dClient
+		dynClient = dClient
 	}
 }
