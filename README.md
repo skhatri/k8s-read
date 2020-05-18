@@ -123,3 +123,13 @@ GET /api/crds?namespace=default&resource-type=cities&resource-group=world.io&res
 ```
 docker build --no-cache -t k8s-read .
 ```
+#### Deploy
+```
+kubectl apply -f deploy/
+```
+
+#### Additional Roles
+```
+kubectl apply -f deploy/rbac/
+```
+

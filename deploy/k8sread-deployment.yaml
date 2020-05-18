@@ -13,6 +13,7 @@ spec:
         name: k8s-read
         app: k8s-read
     spec:
+      serviceAccountName: kube-api-reader
       containers:
        - name: k8s-read
          image: skhatri/k8s-read:0.2
