@@ -3,6 +3,7 @@ FROM golang:1.14 as builder
 RUN mkdir /build
 WORKDIR /build
 COPY . /build
+ENV CGO_ENABLED=0
 RUN go mod vendor
 RUN go build -o k8s-read
 
