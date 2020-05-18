@@ -16,7 +16,7 @@ spec:
       serviceAccountName: kube-api-reader
       containers:
        - name: k8s-read
-         image: skhatri/k8s-read:0.2
+         image: skhatri/k8s-read:0.3
          imagePullPolicy: IfNotPresent
          env:
          - name: CONTROLLER_NAME
