@@ -17,5 +17,7 @@ func Configure(configurer router.ApiConfigurer) {
 		Get("/api/crd-instances", getCrdInstanceList).
 		Get("/api/crd-instance", getCrdInstance).
 		Get("/api/crds", getCrds).
+		Get("/api/endpoints", getEndpoints).
+		Get("/api/services", getServices).
 		GetIf(_settings.IsToggleOn("daemonset_endpoint")).Register("/api/daemonsets", fetchDaemonsets)
 }
