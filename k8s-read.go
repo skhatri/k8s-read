@@ -15,14 +15,19 @@ func main() {
 	}, newLogger())
 }
 
-func newLogger() func(...interface{}) {
+func newLogger() func(router.RequestSummary) {
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: "2006-01-02T15:04:05.999-0700",
 	})
 
-	var loggingFunc = func(args ...interface{}) {
-		logger.Info(args)
+	var loggingFunc = func(requestSummary router.RequestSummary) {
+                if requestSummary.Status >= 400 {
+		  logger.WithField("uri", requestSummary.Uri).
+                    WithField("status_code", requestSummary.Status).
+                    WithField("time_taken", requestSummary.TimeTaken).WithField("unit", requestSummary.Unit).Error()
+                }
 	}
 	return loggingFunc
 }
+
