@@ -40,7 +40,7 @@ func GetNodes() (*NodeList, error) {
 				Memory: item.Status.Capacity.Memory().AsDec().UnscaledBig().Int64(),
 			},
 			Allocatable: ResourceRequirement{
-				Cpu:    1000 * item.Status.Allocatable.Cpu().AsDec().UnscaledBig().Int64(),
+				Cpu:    item.Status.Allocatable.Cpu().AsDec().UnscaledBig().Int64(),
 				Memory: item.Status.Allocatable.Memory().AsDec().UnscaledBig().Int64(),
 			},
 		})
