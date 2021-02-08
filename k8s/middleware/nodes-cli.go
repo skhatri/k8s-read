@@ -12,9 +12,12 @@ type NodeList struct {
 }
 
 type Node struct {
-	Annotations map[string]string `json:"annotations"`
-	Labels      map[string]string `json:"labels"`
-	Taints    []v1.Taint `json:"taints"`
+	Name        string              `json:"name"`
+	Annotations map[string]string   `json:"annotations"`
+	Labels      map[string]string   `json:"labels"`
+	Taints      []v1.Taint          `json:"taints"`
+	Capacity    ResourceRequirement `json:"capacity"`
+	Allocatable ResourceRequirement `json:"allocatable"`
 }
 
 //GetNodes returns list of namespaces in the current cluster
@@ -28,9 +31,18 @@ func GetNodes() (*NodeList, error) {
 	var nodeItems = make([]Node, 0, len(nodeList.Items))
 	for _, item := range nodeList.Items {
 		nodeItems = append(nodeItems, Node{
+			Name:        item.Name,
 			Annotations: item.Annotations,
-			Labels: item.Labels,
-			Taints: item.Spec.Taints,
+			Labels:      item.Labels,
+			Taints:      item.Spec.Taints,
+			Capacity: ResourceRequirement{
+				Cpu:    1000 * item.Status.Capacity.Cpu().AsDec().UnscaledBig().Int64(),
+				Memory: item.Status.Capacity.Memory().AsDec().UnscaledBig().Int64(),
+			},
+			Allocatable: ResourceRequirement{
+				Cpu:    1000 * item.Status.Allocatable.Cpu().AsDec().UnscaledBig().Int64(),
+				Memory: item.Status.Allocatable.Memory().AsDec().UnscaledBig().Int64(),
+			},
 		})
 	}
 	return &NodeList{Nodes: nodeItems}, nil
