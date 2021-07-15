@@ -7,3 +7,4 @@ coverage.html
 go.sum
 vendor
 .scannerwork
+demo.json

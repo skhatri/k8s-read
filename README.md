@@ -118,6 +118,15 @@ GET /api/crds?namespace=default&resource-type=cities&resource-group=world.io&res
     }
 }
 ```
+#### Filtering
+The data can be filtered by additionally providing the following three parameters.
+
+|Parameter|Description|
+|---|---|
+|annotations|Whether to display annotation. default is false.|
+|labels|Whether to display labels. default is false.|
+|names|Object names to filter. comma separated names|
+
 
 #### Docker
 ```
