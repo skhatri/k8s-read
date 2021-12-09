@@ -1,4 +1,4 @@
-FROM golang:1.14 as builder
+FROM golang:1.17 as builder
 
 RUN mkdir /build
 WORKDIR /build
@@ -8,6 +8,7 @@ RUN go mod vendor
 RUN go build -o k8s-read
 
 FROM scratch
+
 COPY --from=builder /build/k8s-read /k8s-read
 EXPOSE 6100
 CMD ["/k8s-read"]
