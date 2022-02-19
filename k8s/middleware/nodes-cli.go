@@ -5,6 +5,7 @@ import (
 	"github.com/skhatri/k8s-read/k8s/client"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 )
 
 type NodeList struct {
@@ -12,19 +13,19 @@ type NodeList struct {
 }
 
 type Node struct {
-	Name        string              `json:"name"`
-	Annotations map[string]string   `json:"annotations"`
-	Labels      map[string]string   `json:"labels"`
-	Taints      []v1.Taint          `json:"taints"`
-	Capacity    ResourceRequirement `json:"capacity"`
-	Allocatable ResourceRequirement `json:"allocatable"`
+	Name             string              `json:"name"`
+	Annotations      map[string]string   `json:"annotations"`
+	Labels           map[string]string   `json:"labels"`
+	Taints           []v1.Taint          `json:"taints"`
+	Capacity         ResourceRequirement `json:"capacity"`
+	Allocatable      ResourceRequirement `json:"allocatable"`
+	CreatedTimestamp time.Time           `json:"createdTimestamp"`
 }
 
 //GetNodes returns list of namespaces in the current cluster
 func GetNodes() (*NodeList, error) {
 	client := client.GetClient()
-	nodeList, nameErr := client.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{
-	})
+	nodeList, nameErr := client.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if nameErr != nil {
 		return nil, nameErr
 	}
@@ -43,6 +44,7 @@ func GetNodes() (*NodeList, error) {
 				Cpu:    item.Status.Allocatable.Cpu().AsDec().UnscaledBig().Int64(),
 				Memory: item.Status.Allocatable.Memory().AsDec().UnscaledBig().Int64(),
 			},
+			CreatedTimestamp: item.CreationTimestamp.Time,
 		})
 	}
 	return &NodeList{Nodes: nodeItems}, nil

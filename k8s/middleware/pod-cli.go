@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/skhatri/k8s-read/k8s/client"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 )
 
 type ResourceRequirement struct {
@@ -29,14 +30,15 @@ type PodSummary struct {
 }
 
 type NodeWorkload struct {
-	Node        string              `json:"node"`
-	Pods        []Pod               `json:"pods"`
-	Request     ResourceRequirement `json:"request"`
-	Limit       ResourceRequirement `json:"limit"`
-	Allocatable ResourceRequirement `json:"allocatable"`
-	Capacity    ResourceRequirement `json:"capacity"`
-	Labels      map[string]string   `json:"labels"`
-	Annotations map[string]string   `json:"annotations"`
+	Node             string              `json:"node"`
+	Pods             []Pod               `json:"pods"`
+	Request          ResourceRequirement `json:"request"`
+	Limit            ResourceRequirement `json:"limit"`
+	Allocatable      ResourceRequirement `json:"allocatable"`
+	Capacity         ResourceRequirement `json:"capacity"`
+	Labels           map[string]string   `json:"labels"`
+	Annotations      map[string]string   `json:"annotations"`
+	CreatedTimestamp time.Time           `json:"createdTimestamp"`
 }
 
 func GetPods(namespace string, nodeName string) (*PodSummary, error) {
@@ -95,6 +97,9 @@ func GetPods(namespace string, nodeName string) (*PodSummary, error) {
 	overallRequest := ResourceRequirement{Cpu: 0, Memory: 0}
 	overallLimit := ResourceRequirement{Cpu: 0, Memory: 0}
 	for k, v := range workload {
+		if k == "" {
+			continue
+		}
 		request := ResourceRequirement{Cpu: 0, Memory: 0}
 		limit := ResourceRequirement{Cpu: 0, Memory: 0}
 		for _, item := range v {
@@ -106,14 +111,15 @@ func GetPods(namespace string, nodeName string) (*PodSummary, error) {
 		}
 		nodeSummaryData := nodeSummary[k]
 		hostWorkloads = append(hostWorkloads, NodeWorkload{
-			Node:        k,
-			Pods:        v,
-			Request:     request,
-			Limit:       limit,
-			Allocatable: nodeSummaryData.Allocatable,
-			Capacity:    nodeSummaryData.Capacity,
-			Labels:      nodeSummaryData.Labels,
-			Annotations: nodeSummaryData.Annotations,
+			Node:             k,
+			Pods:             v,
+			Request:          request,
+			Limit:            limit,
+			Allocatable:      nodeSummaryData.Allocatable,
+			Capacity:         nodeSummaryData.Capacity,
+			Labels:           nodeSummaryData.Labels,
+			Annotations:      nodeSummaryData.Annotations,
+			CreatedTimestamp: nodeSummaryData.CreatedTimestamp,
 		})
 		overallRequest.Cpu += request.Cpu
 		overallRequest.Memory += request.Memory
