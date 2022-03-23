@@ -103,9 +103,16 @@ func GetPods(namespace string, nodeName string) (*PodSummary, error) {
 		request := ResourceRequirement{Cpu: 0, Memory: 0}
 		limit := ResourceRequirement{Cpu: 0, Memory: 0}
 		for _, item := range v {
-			request.Cpu += item.Request.Cpu
-			request.Memory += item.Request.Memory
-
+			if item.Request.Cpu <= item.Limit.Cpu {
+				request.Cpu += item.Request.Cpu
+			} else {
+				request.Cpu += item.Limit.Cpu
+			}
+			if item.Request.Memory <= item.Limit.Memory {
+				request.Memory += item.Request.Memory
+			} else {
+				request.Memory += item.Limit.Memory
+			}
 			limit.Cpu += item.Limit.Cpu
 			limit.Memory += item.Limit.Memory
 		}
