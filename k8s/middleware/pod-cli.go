@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/skhatri/k8s-read/k8s/client"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 )
 
 type ResourceRequirement struct {
@@ -29,10 +30,15 @@ type PodSummary struct {
 }
 
 type NodeWorkload struct {
-	Node    string              `json:"node"`
-	Pods    []Pod               `json:"pods"`
-	Request ResourceRequirement `json:"request"`
-	Limit   ResourceRequirement `json:"limit"`
+	Node             string              `json:"node"`
+	Pods             []Pod               `json:"pods"`
+	Request          ResourceRequirement `json:"request"`
+	Limit            ResourceRequirement `json:"limit"`
+	Allocatable      ResourceRequirement `json:"allocatable"`
+	Capacity         ResourceRequirement `json:"capacity"`
+	Labels           map[string]string   `json:"labels"`
+	Annotations      map[string]string   `json:"annotations"`
+	CreatedTimestamp time.Time           `json:"createdTimestamp"`
 }
 
 func GetPods(namespace string, nodeName string) (*PodSummary, error) {
@@ -78,24 +84,49 @@ func GetPods(namespace string, nodeName string) (*PodSummary, error) {
 		workload[hostNode] = existingPods
 	}
 
+	nodes, err := GetNodes()
+	if err != nil {
+		return nil, err
+	}
+	nodeSummary := make(map[string]Node, 0)
+	for _, node := range nodes.Nodes {
+		nodeSummary[node.Name] = node
+	}
+
 	hostWorkloads := make([]NodeWorkload, 0)
 	overallRequest := ResourceRequirement{Cpu: 0, Memory: 0}
 	overallLimit := ResourceRequirement{Cpu: 0, Memory: 0}
 	for k, v := range workload {
+		if k == "" {
+			continue
+		}
 		request := ResourceRequirement{Cpu: 0, Memory: 0}
 		limit := ResourceRequirement{Cpu: 0, Memory: 0}
 		for _, item := range v {
-			request.Cpu += item.Request.Cpu
-			request.Memory += item.Request.Memory
-
+			if item.Request.Cpu <= item.Limit.Cpu {
+				request.Cpu += item.Request.Cpu
+			} else {
+				request.Cpu += item.Limit.Cpu
+			}
+			if item.Request.Memory <= item.Limit.Memory {
+				request.Memory += item.Request.Memory
+			} else {
+				request.Memory += item.Limit.Memory
+			}
 			limit.Cpu += item.Limit.Cpu
 			limit.Memory += item.Limit.Memory
 		}
+		nodeSummaryData := nodeSummary[k]
 		hostWorkloads = append(hostWorkloads, NodeWorkload{
-			Node:    k,
-			Pods:    v,
-			Request: request,
-			Limit:   limit,
+			Node:             k,
+			Pods:             v,
+			Request:          request,
+			Limit:            limit,
+			Allocatable:      nodeSummaryData.Allocatable,
+			Capacity:         nodeSummaryData.Capacity,
+			Labels:           nodeSummaryData.Labels,
+			Annotations:      nodeSummaryData.Annotations,
+			CreatedTimestamp: nodeSummaryData.CreatedTimestamp,
 		})
 		overallRequest.Cpu += request.Cpu
 		overallRequest.Memory += request.Memory

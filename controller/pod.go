@@ -14,6 +14,7 @@ func fetchPods(web *router.WebRequest) *model.Container {
 
 func getPodWorkload(namespace string, nodeName string) *model.Container {
 	workload, err := middleware.GetPods(namespace, nodeName)
+
 	if err != nil {
 		return model.ErrorResponse(model.MessageItem{
 			Code:    "list-error",

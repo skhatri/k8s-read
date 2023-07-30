@@ -5,6 +5,7 @@ import (
 	"github.com/skhatri/k8s-read/k8s/client"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 )
 
 type NodeList struct {
@@ -12,25 +13,38 @@ type NodeList struct {
 }
 
 type Node struct {
-	Annotations map[string]string `json:"annotations"`
-	Labels      map[string]string `json:"labels"`
-	Taints    []v1.Taint `json:"taints"`
+	Name             string              `json:"name"`
+	Annotations      map[string]string   `json:"annotations"`
+	Labels           map[string]string   `json:"labels"`
+	Taints           []v1.Taint          `json:"taints"`
+	Capacity         ResourceRequirement `json:"capacity"`
+	Allocatable      ResourceRequirement `json:"allocatable"`
+	CreatedTimestamp time.Time           `json:"createdTimestamp"`
 }
 
 //GetNodes returns list of namespaces in the current cluster
 func GetNodes() (*NodeList, error) {
 	client := client.GetClient()
-	nodeList, nameErr := client.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{
-	})
+	nodeList, nameErr := client.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if nameErr != nil {
 		return nil, nameErr
 	}
 	var nodeItems = make([]Node, 0, len(nodeList.Items))
 	for _, item := range nodeList.Items {
 		nodeItems = append(nodeItems, Node{
+			Name:        item.Name,
 			Annotations: item.Annotations,
-			Labels: item.Labels,
-			Taints: item.Spec.Taints,
+			Labels:      item.Labels,
+			Taints:      item.Spec.Taints,
+			Capacity: ResourceRequirement{
+				Cpu:    1000 * item.Status.Capacity.Cpu().AsDec().UnscaledBig().Int64(),
+				Memory: item.Status.Capacity.Memory().AsDec().UnscaledBig().Int64(),
+			},
+			Allocatable: ResourceRequirement{
+				Cpu:    item.Status.Allocatable.Cpu().AsDec().UnscaledBig().Int64(),
+				Memory: item.Status.Allocatable.Memory().AsDec().UnscaledBig().Int64(),
+			},
+			CreatedTimestamp: item.CreationTimestamp.Time,
 		})
 	}
 	return &NodeList{Nodes: nodeItems}, nil
