@@ -4,5 +4,3 @@ all:
 
 latest:
 	@./build.sh latest
-
-

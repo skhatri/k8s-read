@@ -4,7 +4,6 @@ k8s-read
 TODO.md
 *.out
 coverage.html
-go.sum
 vendor
 .scannerwork
 demo.json
