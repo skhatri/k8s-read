@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/sirupsen/logrus v1.9.0
-	github.com/skhatri/api-router-go v0.9.2
 	k8s.io/api v0.22.17
 	k8s.io/apiextensions-apiserver v0.22.17
 	k8s.io/apimachinery v0.22.17
@@ -25,6 +24,7 @@ require (
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/skhatri/api-router-go v0.9.8 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/net v0.0.0-20211209124913-491a49abca63 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect

@@ -142,3 +142,27 @@ kubectl apply -f deploy/
 kubectl apply -f deploy/rbac/
 ```
 
+#### TLS
+A self-signed key/cert is provided to run k8s-read with TLS enabled.
+
+Create certificate like so
+
+```
+openssl genrsa -out private.key 2048
+openssl req -new -x509 -sha256 -key private.key -out cert.pem -days 730 -subj "/C=AU/ST=NSW/L=SYD/O=OSS/OU=IT/CN=k8s-read"
+```
+
+Update router.json to enable or disable TLS
+
+```
+  "transport": {
+    "port": 6100,
+    "tls": {
+      "enabled": true,
+      "private-key": "private.key",
+      "public-key": "cert.pem"
+    }
+  }
+
+```
+

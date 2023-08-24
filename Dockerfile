@@ -9,6 +9,10 @@ RUN go build -o k8s-read
 FROM scratch
 
 COPY --from=builder /build/k8s-read /k8s-read
+COPY --from=builder /build/router.json /router.json
+COPY --from=builder /build/cert.pem /cert.pem
+COPY --from=builder /build/private.key /private.key
+
 EXPOSE 6100
 CMD ["/k8s-read"]
 

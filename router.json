@@ -9,5 +9,17 @@
   },
   "toggles": {
     "daemonset_endpoint": true
+  },
+  "options": {
+    "log-request": true
+  },
+  "transport": {
+    "port": 6100,
+    "tls": {
+      "enabled": true,
+      "private-key": "private.key",
+      "public-key": "cert.pem"
+    }
   }
 }
+
