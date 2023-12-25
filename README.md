@@ -1,4 +1,4 @@
-[![Build](https://travis-ci.com/skhatri/k8s-read.svg?branch=master)](https://travis-ci.com/github/skhatri/k8s-read)
+[![Build](https://github.com/skhatri/k8s-read/actions/workflows/build.yml/badge.svg)](https://github.com/skhatri/k8s-read/actions/workflows/build.yml)
 [![Code Coverage](https://img.shields.io/codecov/c/github/skhatri/k8s-read/master.svg)](https://codecov.io/github/skhatri/k8s-read?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8efb53366c803ff32aff/maintainability)](https://codeclimate.com/github/skhatri/k8s-read/maintainability)
 
