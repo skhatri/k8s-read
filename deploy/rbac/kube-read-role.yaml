@@ -56,4 +56,35 @@ rules:
       - list
       - watch
 
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+      - list
+      - watch
+
+  - apiGroups:
+      - gateway.networking.k8s.io
+    resources:
+      - gatewayclasses
+      - tcproutes
+      - tlsroutes
+      - httproutes
+      - grpcroutes
+      - gateways
+    verbs:
+      - get
+      - list
+      - watch
 
