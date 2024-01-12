@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1 
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: k8s-read
@@ -16,7 +16,7 @@ spec:
       serviceAccountName: kube-api-reader
       containers:
        - name: k8s-read
-         image: skhatri/k8s-read:0.4
+         image: cloudnativek8s/k8s-read:v2.0.0.2
          imagePullPolicy: IfNotPresent
          env:
          - name: CONTROLLER_NAME

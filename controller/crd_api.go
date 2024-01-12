@@ -41,7 +41,6 @@ func getCrdInstanceList(web *router.WebRequest) *model.Container {
 	return model.Response(cresList)
 }
 
-
 func getCrds(web *router.WebRequest) *model.Container {
 	crdList, err := middleware.GetCrds()
 	if err != nil {

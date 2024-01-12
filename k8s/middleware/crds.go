@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/dynamic"
 )
 
-//GetCrdByName Kubernetes Workload of given Custom Resource Type in a namespace.
+// GetCrdByName Kubernetes Workload of given Custom Resource Type in a namespace.
 func GetCrdByName(namespace string, gvr schema.GroupVersionResource, resourceName string) (*CustomResourceInstance, error) {
 	if namespace == "" {
 		return nil, errors.New("namespace is required")
@@ -35,7 +35,7 @@ func GetCrdByName(namespace string, gvr schema.GroupVersionResource, resourceNam
 	return &cres, nil
 }
 
-//GetCrdInstanceList returns custom resource instances for a group
+// GetCrdInstanceList returns custom resource instances for a group
 func GetCrdInstanceList(namespace string, gvr schema.GroupVersionResource) ([]CustomResourceInstanceSummary, error) {
 	dynamicClient := client.GetDynamicClient()
 
@@ -53,10 +53,10 @@ func GetCrdInstanceList(namespace string, gvr schema.GroupVersionResource) ([]Cu
 		groupKind := res.GroupVersionKind()
 		customResources = append(customResources, CustomResourceInstanceSummary{
 			Namespace: res.GetNamespace(),
-			Name:    res.GetName(),
-			Version: groupKind.Version,
-			Group:   groupKind.Group,
-			Resource: gvr.Resource,
+			Name:      res.GetName(),
+			Version:   groupKind.Version,
+			Group:     groupKind.Group,
+			Resource:  gvr.Resource,
 			Link: fmt.Sprintf("/api/crd-instance?resource-group=%s&resource-type=%s&resource-version=%s&namespace=%s&resource-name=%s",
 				groupKind.Group, gvr.Resource, groupKind.Version, res.GetNamespace(), res.GetName()),
 		})
@@ -64,7 +64,7 @@ func GetCrdInstanceList(namespace string, gvr schema.GroupVersionResource) ([]Cu
 	return customResources, nil
 }
 
-//GetCrds returns list of CRDs registered against the Api Server
+// GetCrds returns list of CRDs registered against the Api Server
 func GetCrds() ([]CrdSummary, error) {
 	crds, err := client.GetExtensionsClient().CustomResourceDefinitions().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
@@ -101,8 +101,8 @@ type CustomResourceInstanceSummary struct {
 	Name      string `json:"name"`
 	Group     string `json:"group"`
 	Version   string `json:"version"`
-	Resource   string `json:"resource"`
-	Link string `json:"link"`
+	Resource  string `json:"resource"`
+	Link      string `json:"link"`
 }
 
 type CrdSummary struct {
@@ -111,5 +111,5 @@ type CrdSummary struct {
 	ResourceType string `json:"resource-type"`
 	Kind         string `json:"kind"`
 	Version      string `json:"version"`
-	Link string `json:"link"`
+	Link         string `json:"link"`
 }

@@ -45,7 +45,42 @@ Output:
     "replicas": 2 
   }]
 }
+
+### List Ingresses
+GET /api/ingresses
+
+```json
+{
+  "data": [
+    {
+      "namespace": "default",
+      "kind": "Ingress",
+      "name": "httpserver-ingress",
+      "ingressClass": "nginx",
+      "hosts": [
+        {
+          "name": "www.example.com",
+          "tls": true,
+          "paths": [
+            {
+              "path": "/",
+              "pathType": "Prefix",
+              "resource": "k8s-read",
+              "port": {
+                "name": "",
+                "number": 6100
+              },
+              "kind": "service"
+            }
+          ]
+        }
+      ],
+      "ip": ["192.168.0.3"]
+    }
+  ]
+}
 ```
+
 ### List Custom Resource Definitions
 GET /api/crds
 ```
@@ -118,6 +153,62 @@ GET /api/crds?namespace=default&resource-type=cities&resource-group=world.io&res
     }
 }
 ```
+
+### Gateway API
+You can query for objects like TCPRoute, HTTPRoute using the CRD API
+
+#### Get HTTPRoutes
+GET /api/crd-instances?resource-group=gateway.networking.k8s.io&resource-type=httproutes&resource-version=v1beta1
+```json
+{
+  "data": [
+    {
+      "namespace": "default",
+      "name": "airflow-http",
+      "group": "gateway.networking.k8s.io",
+      "version": "v1beta1",
+      "resource": "httproutes",
+      "link": "/api/crd-instance?resource-group=gateway.networking.k8s.io&resource-type=httproutes&resource-version=v1beta1&namespace=default&resource-name=airflow-http"
+    },
+    {
+      "namespace": "default",
+      "name": "k8s-read-http",
+      "group": "gateway.networking.k8s.io",
+      "version": "v1beta1",
+      "resource": "httproutes",
+      "link": "/api/crd-instance?resource-group=gateway.networking.k8s.io&resource-type=httproutes&resource-version=v1beta1&namespace=default&resource-name=k8s-read-http"
+    }
+  ]
+}
+```
+
+#### Get TCPRoutes
+GET /api/crd-instances?resource-group=gateway.networking.k8s.io&resource-type=tcproutes&resource-version=v1alpha2
+
+```json 
+{
+  "data": [
+    {
+      "namespace": "default",
+      "name": "postgres-endpoint",
+      "group": "gateway.networking.k8s.io",
+      "version": "v1alpha2",
+      "resource": "tcproutes",
+      "link": "/api/crd-instance?resource-group=gateway.networking.k8s.io&resource-type=tcproutes&resource-version=v1alpha2&namespace=default&resource-name=postgres-endpoint"
+    },
+    {
+      "namespace": "default",
+      "name": "cassandra-endpoint",
+      "group": "gateway.networking.k8s.io",
+      "version": "v1alpha2",
+      "resource": "tcproutes",
+      "link": "/api/crd-instance?resource-group=gateway.networking.k8s.io&resource-type=tcproutes&resource-version=v1alpha2&namespace=default&resource-name=cassandra-endpoint"
+    }
+  ]
+}
+```
+
+
 #### Filtering
 The data can be filtered by additionally providing the following three parameters.
 

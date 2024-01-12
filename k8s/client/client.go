@@ -2,12 +2,12 @@ package client
 
 import (
 	"flag"
-	apixv1beta1client "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+	v1client "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"log"
 	"os"
 	"path/filepath"
@@ -35,37 +35,25 @@ func insideKube() bool {
 }
 
 var clientSet *kubernetes.Clientset
-var extClient *apixv1beta1client.ApiextensionsV1beta1Client
+var extClient *v1client.ApiextensionsV1Client
 var dynClient dynamic.Interface
 var mut = sync.Mutex{}
 
 func GetClient() *kubernetes.Clientset {
-	if clientSet != nil {
-		return clientSet
-	}
-	initialize()
 	return clientSet
 }
 
-func GetExtensionsClient() *apixv1beta1client.ApiextensionsV1beta1Client {
-	if extClient != nil {
-		return extClient
-	}
-	initialize()
+func GetExtensionsClient() *v1client.ApiextensionsV1Client {
 	return extClient
 }
 
 func GetDynamicClient() dynamic.Interface {
-	if dynClient != nil {
-		return dynClient
-	}
-	initialize()
 	return dynClient
 }
 
-func initialize() {
+func init() {
 	mut.Lock()
-	defer 	mut.Unlock()
+	defer mut.Unlock()
 
 	var cfg *rest.Config
 	var err error
@@ -83,7 +71,7 @@ func initialize() {
 	if cerr != nil {
 		panic(cerr.Error())
 	}
-	v1beta1Client, err := apixv1beta1client.NewForConfig(cfg)
+	v1beta1Client, err := v1client.NewForConfig(cfg)
 	if err != nil {
 		panic(err.Error())
 	}
