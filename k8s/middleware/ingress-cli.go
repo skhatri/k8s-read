@@ -9,12 +9,14 @@ import (
 )
 
 type IngressItem struct {
-	Namespace    string     `json:"namespace"`
-	Kind         string     `json:"kind"`
-	Name         string     `json:"name"`
-	IngressClass *string    `json:"ingressClass"`
-	Hosts        []HostType `json:"hosts"`
-	IP           []string   `json:"ip"`
+	Namespace    string            `json:"namespace"`
+	Kind         string            `json:"kind"`
+	Name         string            `json:"name"`
+	IngressClass *string           `json:"ingressClass"`
+	Hosts        []HostType        `json:"hosts"`
+	IP           []string          `json:"ip"`
+	Annotations  map[string]string `json:"annotations,omitempty"`
+	Labels       map[string]string `json:"labels,omitempty"`
 }
 
 type HostType struct {
@@ -35,7 +37,7 @@ type PortType struct {
 	Number int32  `json:"number"`
 }
 
-func GetIngress(namespace string) ([]interface{}, error) {
+func GetIngress(namespace string, options DisplayOptions) ([]interface{}, error) {
 
 	k8s := client.GetClient()
 	if namespace == "" {
@@ -44,16 +46,29 @@ func GetIngress(namespace string) ([]interface{}, error) {
 	if namespace == "any" {
 		namespace = ""
 	}
-	return getIngresses(k8s, namespace)
+	return getIngresses(k8s, namespace, options)
 }
 
-func getIngresses(k8s *kubernetes.Clientset, namespace string) ([]interface{}, error) {
+func getIngresses(k8s *kubernetes.Clientset, namespace string, options DisplayOptions) ([]interface{}, error) {
 	depList, depErr := k8s.NetworkingV1().Ingresses(namespace).List(context.TODO(), metav1.ListOptions{})
 	if depErr != nil {
 		return nil, depErr
 	}
 	workload := make([]interface{}, 0)
 	for _, ingress := range depList.Items {
+		if len(options.Names) > 0 {
+			found := false
+			for _, name := range options.Names {
+				if name == ingress.Name {
+					found = true
+					break
+				}
+			}
+			if !found {
+				continue
+			}
+		}
+
 		spec := ingress.Spec
 		tlsMap := make(map[string]string)
 
@@ -101,14 +116,21 @@ func getIngresses(k8s *kubernetes.Clientset, namespace string) ([]interface{}, e
 		for _, ing := range ingress.Status.LoadBalancer.Ingress {
 			addresses = append(addresses, ing.IP)
 		}
-		workload = append(workload, IngressItem{
+		ingressItem := IngressItem{
 			Namespace:    ingress.Namespace,
 			Kind:         "Ingress",
 			Name:         ingress.Name,
 			IngressClass: ingress.Spec.IngressClassName,
 			Hosts:        hosts,
 			IP:           addresses,
-		})
+		}
+		if options.Labels {
+			ingressItem.Labels = ingress.Labels
+		}
+		if options.Annotations {
+			ingressItem.Annotations = ingress.Annotations
+		}
+		workload = append(workload, ingressItem)
 	}
 	return workload, nil
 }
