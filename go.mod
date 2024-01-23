@@ -1,6 +1,6 @@
 module github.com/skhatri/k8s-read
 
-go 1.20
+go 1.21.5
 
 require (
 	github.com/sirupsen/logrus v1.9.0
@@ -13,6 +13,7 @@ require (
 
 require (
 	cloud.google.com/go v0.54.0 // indirect
+	filippo.io/age v1.1.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-logr/logr v0.4.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -24,12 +25,14 @@ require (
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/skhatri/go-crypt v0.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/term v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/term v0.16.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect

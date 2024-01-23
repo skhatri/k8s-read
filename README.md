@@ -209,6 +209,30 @@ GET /api/crd-instances?resource-group=gateway.networking.k8s.io&resource-type=tc
 ```
 
 
+#### Get Secrets
+Since secrets are not meant to be intercepted in transit, we would like to encrypt each entry with provided public key. For this we use ```age```
+
+curl -H "x-request-encrypt-algorithm: age" \
+    -H"x-request-public-key: age1gn26zalgf5xn5dn04lxemu4x4uapvkgh3jf4ajqwxklxdtdtdd3sy83wcx" \
+    "https://localhost:6100/api/secrets?namespace=default&type="
+
+```json
+{
+  "data": [
+    {
+      "namespace": "default",
+      "name": "k8s-read",
+      "data": {
+        "tls.crt": "encrypted cert",
+        "tls.key": "encrypted key",
+        "type": "kubernetes.io/tls"
+      }
+    }
+  ]
+}
+```
+when type parameter is empty, it defaults to tls. To retrieve, Opaque secrets, use type=Opaque.
+
 #### Filtering
 The data can be filtered by additionally providing the following three parameters.
 
