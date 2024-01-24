@@ -11,13 +11,21 @@ func getSecretsFunc(keys *string) ApiHandler {
 	publicKeys := strings.Split(*keys, ",")
 	return func(web *router.WebRequest) *model.Container {
 		var namespace = web.GetQueryParam("namespace")
+		filterNames := getfilterList(web.GetQueryParam("names"))
+		annotations := web.GetQueryParam("annotations")
+		labels := web.GetQueryParam("labels")
 		var publicKey = web.GetHeader("X-Request-Public-Key")
 		var algoKey = web.GetHeader("X-Request-Encrypt-Algorithm")
 		var secretType = web.GetQueryParam("type")
 		if secretType == "" {
 			secretType = "tls"
 		}
-		return getSecretItems(publicKeys, namespace, algoKey, publicKey, &secretType)
+		displayOptions := middleware.DisplayOptions{
+			Names:       filterNames,
+			Annotations: annotations == "true",
+			Labels:      labels == "true",
+		}
+		return getSecretItems(publicKeys, namespace, algoKey, publicKey, &secretType, displayOptions)
 	}
 }
 func contains(items []string, item string) bool {
@@ -29,7 +37,7 @@ func contains(items []string, item string) bool {
 	return false
 }
 
-func getSecretItems(publicKeys []string, namespace string, algo string, publicKey string, secretType *string) *model.Container {
+func getSecretItems(publicKeys []string, namespace string, algo string, publicKey string, secretType *string, options middleware.DisplayOptions) *model.Container {
 	if algo != "age" {
 		return model.ErrorResponse(model.MessageItem{
 			Code:    "request-error",
@@ -46,7 +54,7 @@ func getSecretItems(publicKeys []string, namespace string, algo string, publicKe
 		Algorithm:  algo,
 		PublicKey:  publicKey,
 		SecretType: secretType,
-	})
+	}, options)
 	if err != nil {
 		return model.ErrorResponse(model.MessageItem{
 			Code:    "list-error",
