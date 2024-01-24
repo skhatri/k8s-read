@@ -12,10 +12,12 @@ import (
 )
 
 type Secret struct {
-	Namespace string            `json:"namespace"`
-	Name      string            `json:"name"`
-	Data      map[string][]byte `json:"data"`
-	Type      v1.SecretType     `json:"type"`
+	Namespace   string            `json:"namespace"`
+	Name        string            `json:"name"`
+	Data        map[string][]byte `json:"data"`
+	Type        v1.SecretType     `json:"type"`
+	Annotations map[string]string `json:"annotations,omitempty"`
+	Labels      map[string]string `json:"labels,omitempty"`
 }
 
 type SecretRequest struct {
@@ -24,7 +26,7 @@ type SecretRequest struct {
 	SecretType *string
 }
 
-func GetSecretItems(namespace string, secRequest SecretRequest) ([]interface{}, error) {
+func GetSecretItems(namespace string, secRequest SecretRequest, options DisplayOptions) ([]interface{}, error) {
 
 	k8s := client.GetClient()
 	if namespace == "" {
@@ -33,10 +35,10 @@ func GetSecretItems(namespace string, secRequest SecretRequest) ([]interface{}, 
 	if namespace == "any" {
 		namespace = ""
 	}
-	return getSecrets(k8s, namespace, secRequest)
+	return getSecrets(k8s, namespace, secRequest, options)
 }
 
-func getSecrets(k8s *kubernetes.Clientset, namespace string, request SecretRequest) ([]interface{}, error) {
+func getSecrets(k8s *kubernetes.Clientset, namespace string, request SecretRequest, options DisplayOptions) ([]interface{}, error) {
 	depList, depErr := k8s.CoreV1().Secrets(namespace).List(context.TODO(), metav1.ListOptions{})
 	if depErr != nil {
 		return nil, depErr
@@ -48,6 +50,19 @@ func getSecrets(k8s *kubernetes.Clientset, namespace string, request SecretReque
 	}
 	for _, secret := range depList.Items {
 		if fmt.Sprintf("%v", secret.Type) == secType {
+			if len(options.Names) > 0 {
+				found := false
+				for _, name := range options.Names {
+					if name == secret.Name {
+						found = true
+						break
+					}
+				}
+				if !found {
+					continue
+				}
+			}
+
 			encryptData := make(map[string][]byte)
 			for k, v := range secret.Data {
 				encrypted, encErr := asymmetric.AgeEncrypt(request.PublicKey, string(v))
@@ -55,13 +70,19 @@ func getSecrets(k8s *kubernetes.Clientset, namespace string, request SecretReque
 					encryptData[k] = []byte(encrypted)
 				}
 			}
-
-			workload = append(workload, Secret{
+			secretItem := Secret{
 				Namespace: secret.Namespace,
 				Name:      secret.Name,
 				Data:      encryptData,
 				Type:      secret.Type,
-			})
+			}
+			if options.Labels {
+				secretItem.Labels = secret.Labels
+			}
+			if options.Annotations {
+				secretItem.Annotations = secret.Annotations
+			}
+			workload = append(workload, secretItem)
 		}
 	}
 	return workload, nil
