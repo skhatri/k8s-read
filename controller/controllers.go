@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/skhatri/api-router-go/router"
 	"github.com/skhatri/api-router-go/router/functions"
+	"github.com/skhatri/api-router-go/router/model"
 	"github.com/skhatri/api-router-go/router/settings"
 )
 
@@ -21,6 +22,14 @@ func Configure(configurer router.ApiConfigurer) {
 		Get("/api/endpoints", getEndpoints).
 		Get("/api/services", getServices).
 		Get("/api/ingresses", getIngresses).
-		Get("/api/secrets", getSecrets).
+		GetIf(_settings.IsToggleOn("secret_endpoint")).
+		Register("/api/secrets",
+			func() func(request *router.WebRequest) *model.Container {
+				keys := _settings.Variable("public-keys")
+				if keys == nil || len(*keys) == 0 {
+					return disabled
+				}
+				return getSecretsFunc(keys)
+			}()).
 		GetIf(_settings.IsToggleOn("daemonset_endpoint")).Register("/api/daemonsets", fetchDaemonsets)
 }

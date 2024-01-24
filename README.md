@@ -212,6 +212,33 @@ GET /api/crd-instances?resource-group=gateway.networking.k8s.io&resource-type=tc
 #### Get Secrets
 Since secrets are not meant to be intercepted in transit, we would like to encrypt each entry with provided public key. For this we use ```age```
 
+We also have additional settings we need to configure. Secret endpoint is disabled by default and you need to set ```secret_endpoint``` to true.
+
+Relevant snippet from router.json is presented below.
+```json
+{
+  "toggles": {
+    "daemonset_endpoint": true,
+    "secret_endpoint": true
+  }
+}
+```
+
+Similarly, we need to whitelist public keys of clients who will be calling the secrets endpoint. This is done with the assumpption that the data can only
+be decrypted with expected private keys. It is client's responsibility to keep the private key secure.
+
+The list of public keys can be provided in a comma separate list under variable ```public-keys``` in router.json
+
+```
+{
+    "variables": {
+        "public-keys": "age10qq6fyrurpkhg7nnt98ccewnvy6utpaf54rmjesq68c6qp9s99rsgamn0z,age1gn26zalgf5xn5dn04lxemu4x4uapvkgh3jf4ajqwxklxdtdtdd3sy83wcx"
+    }
+}
+```
+
+Once the application is configured with toggle and public key list, you may call the endpoint to retrieve the secrets.
+
 curl -H "x-request-encrypt-algorithm: age" \
     -H"x-request-public-key: age1gn26zalgf5xn5dn04lxemu4x4uapvkgh3jf4ajqwxklxdtdtdd3sy83wcx" \
     "https://localhost:6100/api/secrets?namespace=default&type="

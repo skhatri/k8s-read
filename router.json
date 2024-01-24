@@ -8,7 +8,11 @@
     "access-control-max-age": "7200"
   },
   "toggles": {
-    "daemonset_endpoint": true
+    "daemonset_endpoint": true,
+    "secret_endpoint": true
+  },
+  "variables": {
+    "public-keys": "age10qq6fyrurpkhg7nnt98ccewnvy6utpaf54rmjesq68c6qp9s99rsgamn0z,age1gn26zalgf5xn5dn04lxemu4x4uapvkgh3jf4ajqwxklxdtdtdd3sy83wcx"
   },
   "options": {
     "log-request": true
