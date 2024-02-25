@@ -80,7 +80,10 @@ func getSecrets(k8s *kubernetes.Clientset, namespace string, request SecretReque
 				secretItem.Labels = secret.Labels
 			}
 			if options.Annotations {
-				secretItem.Annotations = secret.Annotations
+        secretItem.Annotations = make(map[string]string)
+        if secret.Annotations != nil {
+				  secretItem.Annotations = secret.Annotations
+        }
         secretItem.Annotations["k8s-read.io/public-key"] = request.PublicKey 
 			}
 			workload = append(workload, secretItem)
